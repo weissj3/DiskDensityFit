@@ -1,0 +1,6 @@
+[submodule "tao"]
+	path = tao
+	url = https://github.com/travisdesell/tao.git
+[submodule "undvc_common"]
+	path = undvc_common
+	url = https://github.com/travisdesell/undvc_common.git
