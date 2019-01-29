@@ -1,27 +1,6 @@
-#include <iostream>
-#include <math.h>
-#include <iomanip>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <limits>
-#include <stdlib.h>
-#include <random>
-#include <time.h>
-#include <cstdlib>
-#include <cassert>
+#include "Density_to_Star_Counts.h"
 
-#include "tao/asynchronous_algorithms/particle_swarm.hxx"
-#include "tao/asynchronous_algorithms/differential_evolution.hxx"
 
-#include "tao/synchronous_algorithms/parameter_sweep.hxx"
-#include "tao/synchronous_algorithms/synchronous_gradient_descent.hxx"
-#include "tao/synchronous_algorithms/synchronous_newton_method.hxx"
-
-//from undvc_common
-#include "undvc_common/arguments.hxx"
-#include "undvc_common/vector_io.hxx"
 using namespace std;
 
 
@@ -219,7 +198,7 @@ double objective_function(const vector<double> &t1)
 	
 	vector<double> final_star_count = mult2arrays(convolved, CC);
 
-	double result = chi_squared(objective_function_t2, final_star_count);
+	double result = chi_squared(final_star_count, objective_function_t2);
     fitness = result;
 
 	return -(result);
@@ -349,69 +328,6 @@ vector<double> getRealTransformedData (int line1, string filePath)
 
 }
 
-
-void testInputvsResults()
-{
-	vector<double> starcounts = interpolate(t1);
-    storage = starcounts;
-		
-	//Calculate magnitude ranges
-	double lowerbound = 16;
-	double upperbound = 16 + double(starcounts.size())/2.0;
-	
-    vector<double> convolved = Discrete_Convolution_2_Odd(starcounts);
-    
-	vector<double> CC = Completeness_2(Completeness(lowerbound, upperbound, .5));
-
-	//because the convolution adds extra bins on the end, this removes the bins
-	//to make the two vectors have the same size
-	while (convolved.size() != CC.size())
-	{
-		convolved.pop_back();
-		convolved.erase(convolved.begin());
-	}
-	
-	vector<double> final_star_count = mult2arrays(convolved, CC);
-
-}
-
-
-
-void runTests() 
-{
-
-    vector<double> temp = Completeness_2(vector<double>(13, 1.0));
-    std::cout << "Test Completeness_2" << std::endl;
-    for(size_t i = 0; i < temp.size(); i++)
-    {
-        std::cout << temp[i] << ", ";
-    }
-    std::cout << std::endl;
-    
-    temp = Completeness(16, (22.5), .5);
-    std::cout << "Test Completeness" << std::endl;
-    for(size_t i = 0; i < temp.size(); i++)
-    {
-        std::cout << temp[i] << ", ";
-    }
-    std::cout << std::endl;
-    
-    temp = Discrete_Convolution_2_Odd({0,0,0,0,0,0,1,1,0,0,0,0,0});
-    std::cout << "Test Discrete_Convolution_2_Odd" << std::endl;
-    for(size_t i = 0; i < temp.size(); i++)
-    {
-        std::cout << temp[i] << ", ";
-    }
-    std::cout << std::endl;
-    
-    
-    
-    
-    
-    return;
-}
-
-
 //Takes input data from files with leading zeros
 //Remove leading and trailing zeros and return clean data from 16 to 22.5
 vector<double> trimData(const vector<double>& input)
@@ -427,10 +343,8 @@ vector<double> trimData(const vector<double>& input)
     return result;
 }
 
-
-int main(int argc, char* argv[])
+void run(int argc, char** argv) 
 {
-    //runTests();
     for (int i = 2; i < argc; i++)
     {
         string filePathInput = argv[i];
@@ -482,5 +396,5 @@ int main(int argc, char* argv[])
             //cout << "No stars in this histogram" << endl;
         }    
     }
-    return 0;
+
 }

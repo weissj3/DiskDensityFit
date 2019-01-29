@@ -2,30 +2,38 @@ project(DiskFit)
 
 cmake_minimum_required(VERSION 2.6)
 
+#Broke out the code into a testable library
 
-set(CMAKE_CXX_FLAGS "-g -Wall -O3 -funroll-loops -ftree-vectorize -msse3")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+option(BUILD_TESTS "Build test programs" 0)
 
-set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /opt/local/lib)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/undvc_common/cmake/Modules/")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/")
+include_directories(${PROJECT_SOURCE_DIR}/includes)
+include_directories(${PROJECT_SOURCE_DIR}/../tao)
+include_directories(${PROJECT_SOURCE_DIR}/../undvc_common)
 
+set(INCLUDES    includes/Density_to_Star_Counts.h)
 
+set(SOURCE     src/Density_to_StarCounts_TrimmedDown.cpp
+                src/Density_to_StarCounts_main.cpp)
+                
+if(${TEST})
+    include_directories(${PROJECT_SOURCE_DIR}/Tests/includes)
+    set(INCLUDES    ${INCLUDE}
+                    Tests/includes/Density_toStarCounts_Tests.h)
 
-find_package(Boost REQUIRED COMPONENTS filesystem system)
-
-
-add_subdirectory(tao)
-add_subdirectory(undvc_common)
-include_directories(${PROJECT_SOURCE_DIR}/tao)
-include_directories(${PROJECT_SOURCE_DIR}/undvc_common)
-
-#set(INCLUDES    )
-
-set(SOURCES     Density_to_StarCounts_TrimmedDown.cpp)
-
-add_executable(${PROJECT_NAME} ${SOURCES})
-
+    set(SOURCE     ${SOURCE}
+                    Tests/src/Tests_main.cpp)
+                
+endif(${TEST})
 
 link_directories(${Boost_LIBRARY_DIRS})
+
+add_executable(${PROJECT_NAME} ${SOURCE})
+
+if(${TEST})
+
+    target_compile_definitions(${PROJECT_NAME} PUBLIC TEST)
+    
+endif(${TEST})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} asynchronous_algorithms synchronous_algorithms tao_util undvc_common ${Boost_LIBRARIES})
+
+

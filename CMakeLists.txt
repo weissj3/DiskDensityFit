@@ -1,4 +1,4 @@
-project(DiskFit)
+project(DiskFit_project)
 
 cmake_minimum_required(VERSION 2.6)
 
@@ -17,11 +17,6 @@ find_package(Boost REQUIRED COMPONENTS filesystem system)
 
 add_subdirectory(tao)
 add_subdirectory(undvc_common)
-add_subdirectory(Tests)
 add_subdirectory(Density_Program)
-include_directories(${PROJECT_SOURCE_DIR}/tao)
-include_directories(${PROJECT_SOURCE_DIR}/undvc_common)
-include_directories(${PROJECT_SOURCE_DIR}/Tests)
-include_directories(${PROJECT_SOURCE_DIR}/Density_Program)
 
 
