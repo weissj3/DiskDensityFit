@@ -343,12 +343,28 @@ vector<double> trimData(const vector<double>& input)
     return result;
 }
 
+unsigned int findLastDelimiter(string input, char delimiter) 
+{
+    for( unsigned int i = input.size(); i != 0; i-- ) 
+    {
+        if ( input[i-1] == delimiter )
+        {
+            return i-1;
+        }    
+    }
+    return input.size();
+}
+
 void run(int argc, char** argv) 
 {
-    for (int i = 2; i < argc; i++)
+    if(argc < 3) {
+        cerr << "Expected Input: <Trim Input: 0/1> <Output File Location> <Input Files>" << endl;
+        return;
+    }
+    for (int i = 3; i < argc; i++)
     {
         string filePathInput = argv[i];
-        string filePathOutput = string("./JakeWork/PannStars_Results/") + &argv[i][26];
+        string filePathOutput = string(argv[2]) + &argv[i][findLastDelimiter(argv[i], '/')+1];
         //string filePathStartingFit = argv[1];
         
         //Input data must have odd number of bins

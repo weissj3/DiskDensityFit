@@ -41,6 +41,26 @@ void testInputvsResults(const vector<double> &t1)
     
 }
 
+void testDelimiterFinding()
+{
+    //Test for "unsigned int findLastDelimiter(string input, char delimiter)"
+    cout << "Test findLastDelimiter" << endl;
+    unsigned int failed = 0;
+    failed += (findLastDelimiter("../../Work/12/folderName", '/') != 13);
+    failed += (findLastDelimiter("../../Work/12/folderName/", '/') != 24);
+    failed += (findLastDelimiter("/", '/') != 0);
+    failed += (findLastDelimiter("", '/') != 0);
+    failed += (findLastDelimiter("..*..*Work*12*folderName", '/') != 24);
+    failed += (findLastDelimiter("/.*..*Work*12*folderName", '/') != 0);
+    if ( failed )
+    {
+        cout << "findLastDelimiter() failed " << failed << "/6 tests." << endl;
+    }
+    else
+    {
+        cout << "findLastDelimiter() passed all tests." << endl;
+    }
+}
 
 void unitTests()
 {
@@ -68,6 +88,8 @@ void unitTests()
         std::cout << temp[i] << ", ";
     }
     std::cout << std::endl;
+    
+    testDelimiterFinding();
 
 }
 

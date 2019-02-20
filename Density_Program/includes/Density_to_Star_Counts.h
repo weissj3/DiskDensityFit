@@ -61,6 +61,8 @@ vector<double> getRealTransformedData (int line1, string filePath);
 //Remove leading and trailing zeros and return clean data from 16 to 22.5
 vector<double> trimData(const vector<double>& input);
 
+unsigned int findLastDelimiter(string input, char delimiter);
+
 void run(int argc, char** argv);
 
 #endif //__DENSITY_TO_STAR_COUNTS_H__
