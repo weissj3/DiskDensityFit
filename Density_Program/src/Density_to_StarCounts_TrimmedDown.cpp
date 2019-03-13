@@ -73,24 +73,14 @@ vector<double> Discrete_Convolution_2_Odd(vector<double> list1)
                 included[j+edges] = false; //changed from 2
             }
         }
-		
-		//overall represents the area under the gaussian that is not out of bounds
-		//it represents a normalizing coefficient that will be used. If all bins of the gaussian are in,
-		//the overall will sum over the entire gaussian, which should equal approx. one
-        double overall = 0.;
-        for (unsigned int alpha = 0; alpha < vectorGaussian[i].size(); alpha++)
-        {
-            overall += ((double) included[alpha]) * vectorGaussian[i][alpha];
-        }
         double total = 0.;
-        
         //finds total to add to convolution, when gaussian is not over the stars does not count anything.
         //check this for edges
         for(unsigned int k = 0; k < vectorGaussian[i].size(); k++)
         {
             if (!included[k])
                 continue;
-            total += histogram1[i+k-edges] * vectorGaussian[i][k] / overall;
+            total += histogram1[i+k-edges] * vectorGaussian[i][k] / 1;
         }
         
         //adds total to result list of values
