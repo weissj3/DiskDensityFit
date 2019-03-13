@@ -58,7 +58,7 @@ vector<double> Discrete_Convolution_2_Odd(vector<double> list1)
     
     int edges = (int)(vectorGaussian[0].size()/2);
     
-    for (unsigned int i = 0; i < histogram1.size(); i++) //changed from unsigned int to int
+    for (int i = 0; i < histogram1.size(); i++) //changed from unsigned int to int
     {
         for (unsigned int t = 0; t < vectorGaussian[i].size(); t++)
             included[t] = true;
@@ -73,28 +73,16 @@ vector<double> Discrete_Convolution_2_Odd(vector<double> list1)
                 included[j+edges] = false; //changed from 2
             }
         }
-        
-        double overall = 1.;
-        
-        for (int m = 0; m < vectorGaussian[i].size(); m++)
+		
+		//overall represents the area under the gaussian that is not out of bounds
+		//it represents a normalizing coefficient that will be used. If all bins of the gaussian are in,
+		//the overall will sum over the entire gaussian, which should equal approx. one
+        double overall = 0.;
+        for (unsigned int alpha = 0; alpha < vectorGaussian[i].size(); alpha++)
         {
-            if (!included[m])
-            {
-                overall = 0.;
-            }
-        }
-        
-        //finds the amount of area under the remaining bars
-        if (overall < .001)
-        {
-            overall = 0.;
-            for (unsigned int alpha = 0; alpha < vectorGaussian[i].size(); alpha++)
-            {
-                overall += ((double) included[alpha]) * vectorGaussian[i][alpha];
-            }
+            overall += ((double) included[alpha]) * vectorGaussian[i][alpha];
         }
         double total = 0.;
-        
         
         //finds total to add to convolution, when gaussian is not over the stars does not count anything.
         //check this for edges
@@ -108,13 +96,13 @@ vector<double> Discrete_Convolution_2_Odd(vector<double> list1)
         //adds total to result list of values
         result.push_back(total);
     }
-    
     return result;
 }
 
 
 vector<double> Completeness(double Mag_min, double Mag_max, double interval)
 {
+	//detection efficiency
 	double s0 = .9402;
 	double s1 = 1.6171;
 	double s2 = 23.5877;
@@ -128,11 +116,23 @@ vector<double> Completeness(double Mag_min, double Mag_max, double interval)
 	{
 		double value = s0 / (exp(s1*(i * interval + Mag_min + (interval/2.0) - s2)) + 1); // gives 16.25 - s2, 16.75 - s2, 17.25 - s2, etc. it is using the midpointof each bin as magnitude
 		CC.push_back(value);
-	}
-	return CC; 
+	} 
+	
+	//selection efficiency
+	vector<double> vectorCompleteness = {0.986088,0.972016,0.957948,0.944999,0.934449,0.927228,0.922852,0.917635,0.902512,0.861945,0.777409,0.640076,0.471073};
+    assert(CC.size() == vectorCompleteness.size());
+    
+    //Element-wise multiply the input array by the completeness
+    for (int i = 0; i < vectorCompleteness.size(); i++)
+    {
+        CC[i] *= vectorCompleteness[i];  
+    }
+
+    return CC;
 }
 
-
+//Function has been refactored into completeness
+/*
 vector<double> Completeness_2(vector<double> CC)
 {
     //Initialize the array to the completeness coefficient for each bin
@@ -147,7 +147,7 @@ vector<double> Completeness_2(vector<double> CC)
 
     return vectorCompleteness;
     
-}
+}*/
 
 //returns chi-squared value
 //DOES NOT WORK WHEN THERE ARE ZEROS IN THE EXPECTED (INPUT) DATA
@@ -186,10 +186,12 @@ double objective_function(const vector<double> &t1)
 	
     vector<double> convolved = Discrete_Convolution_2_Odd(starcounts);
     
-	vector<double> CC = Completeness_2(Completeness(lowerbound, upperbound, .5));
+	vector<double> CC = Completeness(lowerbound, upperbound, .5);
 
 	//because the convolution adds extra bins on the end, this removes the bins
 	//to make the two vectors have the same size
+	//this is not needed, as long as the input to the convolution is the same size
+	//as the completeness array
 	while (convolved.size() != CC.size())
 	{
 		convolved.pop_back();
@@ -233,7 +235,7 @@ void optimize(vector<double> t1)
 vector<double> startingFitEfficiency(vector<double> startingData)
 {
     vector<double> startingFit;
-    vector<double> CC = Completeness_2(Completeness(16., (startingData.size()/2.0 + 16.), .5));
+    vector<double> CC = Completeness(16., (startingData.size()/2.0 + 16.), .5);
     
     for (int i = 0; i < startingData.size(); i++)
     {
