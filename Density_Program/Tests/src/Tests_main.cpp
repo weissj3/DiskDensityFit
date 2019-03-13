@@ -236,7 +236,7 @@ void testCompleteness()
     vector <double> temp = Completeness(16, (22.5), .5);
     cout<<"Completeness from mag 16 to 22 in .5 steps"<<endl;
     printArray(temp);
-    std::cout << std::endl;
+    std::cout <<"Finished outputing completeness"<< std::endl;
 }
 
 
@@ -246,11 +246,7 @@ void unitTests()
     testMult2arrays();
 	testDiscrete_Convolution_2_Odd();
 	testCompleteness();
-	
-
-
     testDelimiterFinding();
-
 }
 
 //I don't think I actually want to use this.
