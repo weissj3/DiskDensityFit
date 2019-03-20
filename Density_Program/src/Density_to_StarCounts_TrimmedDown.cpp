@@ -3,7 +3,6 @@
 
 using namespace std;
 
-
 //Takes a vector which should be interpolated
 //returns a vector that is the interpolated version of the original vector
 //This vector will have a size == input.size() + (input.size()-1)
@@ -46,47 +45,24 @@ vector<double> mult2arrays(const vector<double> &array1, const vector<double> &a
 	return result; 
 }
 
+//requires the gaussian vectors inside vector gaussian to have odd length
 vector<double> Discrete_Convolution_2_Odd(vector<double> list1)
 {
-    vector<double> histogram1 = list1;
-
     vector< vector <double> > vectorGaussian = {{0.000146222,0.00152518,0.0104476,0.0470463,0.139381,0.271853,0.343851,0.169326,0.0163913,0.000275136,0.000000749684},{0.000146292,0.00152567,0.0104498,0.0470513,0.139386,0.271852,0.343844,0.169322,0.016391,0.00027513,0.000000749667},{0.00014647,0.00152694,0.0104552,0.0470641,0.139399,0.271849,0.343826,0.169312,0.01639,0.000275115,0.000000749625},{0.000146993,0.00153067,0.0104711,0.0471017,0.139438,0.271838,0.34377,0.169284,0.0163873,0.000275069,0.000000749499},{0.000148947,0.00154456,0.0105301,0.0472411,0.139583,0.271799,0.343566,0.169179,0.0163771,0.000274897,0.000000749033},{0.000158861,0.00161417,0.0108227,0.0479266,0.140287,0.271603,0.342566,0.168663,0.0163271,0.000274059,0.000000746749},{0.000240385,0.0021425,0.0129031,0.0525479,0.144804,0.270141,0.335936,0.165252,0.015997,0.000268518,0.000000731649},{0.00202997,0.00913824,0.0314354,0.0826496,0.166109,0.255227,0.294742,0.144323,0.013971,0.00023451,0.000000638985},{0.0124662,0.0306631,0.0642212,0.114533,0.173935,0.224931,0.243223,0.118616,0.0114824,0.000192738,0.000000525168},{0.0145973,0.0339889,0.0680515,0.117162,0.173455,0.220825,0.237361,0.115715,0.0112016,0.000188025,0.000000512324},{0.0146547,0.0340756,0.0681486,0.117226,0.17344,0.220719,0.237212,0.115641,0.0111945,0.000187905,0.000000511997},{0.0146552,0.0340765,0.0681495,0.117226,0.173439,0.220718,0.23721,0.11564,0.0111944,0.000187903,0.000000511994},{0.0146552,0.0340765,0.0681495,0.117226,0.173439,0.220718,0.23721,0.11564,0.0111944,0.000187903,0.000000511994}};
     
-    vector<double> result;
-    
-    vector<bool> included(vectorGaussian[0].size(), true);
-    
-    int edges = (int)(vectorGaussian[0].size()/2);
-    
-    for (int i = 0; i < histogram1.size(); i++) //changed from unsigned int to int
-    {
-        for (unsigned int t = 0; t < vectorGaussian[i].size(); t++)
-            included[t] = true;
-        
-        //checks if the gaussian bars lie over the stars
-        for (int j = -(edges); j <= edges; j++)
-        {
-            if ((i+j < 0) || (i+j >= (int) histogram1.size()))
-            {
-                //getting a warning because an expression with an unsigned variable in it will always be greater than zero; so this statment only depends on the second option
-                // when run by itself, when i = 0 and j = -2, i + j = 4294967294, which is not -2
-                included[j+edges] = false; //changed from 2
-            }
-        }
-        double total = 0.;
-        //finds total to add to convolution, when gaussian is not over the stars does not count anything.
-        //check this for edges
-        for(unsigned int k = 0; k < vectorGaussian[i].size(); k++)
-        {
-            if (!included[k])
-                continue;
-            total += histogram1[i+k-edges] * vectorGaussian[i][k] / 1;
-        }
-        
-        //adds total to result list of values
-        result.push_back(total);
-    }
-    return result;
+	vector<double> result(list1.size(), 0.0);
+	for (int i = 0; i < list1.size(); i += 1)
+	{
+		for (int j = 0; j < vectorGaussian[i].size(); j+=1)
+		{
+			int loc = i + j - vectorGaussian[i].size()/2;
+			if (loc >= 0 and loc < result.size())
+			{
+				result[loc] += list1[i] * vectorGaussian[i][j];
+			}
+		}
+	}
+	return result;
 }
 
 
@@ -120,24 +96,6 @@ vector<double> Completeness(double Mag_min, double Mag_max, double interval)
 
     return CC;
 }
-
-//Function has been refactored into completeness
-/*
-vector<double> Completeness_2(vector<double> CC)
-{
-    //Initialize the array to the completeness coefficient for each bin
-    vector<double> vectorCompleteness = {0.986088,0.972016,0.957948,0.944999,0.934449,0.927228,0.922852,0.917635,0.902512,0.861945,0.777409,0.640076,0.471073};
-    assert(CC.size() == vectorCompleteness.size());
-    
-    //Element-wise multiply the input array by the completeness
-    for (int i = 0; i < vectorCompleteness.size(); i++)
-    {
-        vectorCompleteness[i] *= CC[i];  
-    }
-
-    return vectorCompleteness;
-    
-}*/
 
 //returns chi-squared value
 //DOES NOT WORK WHEN THERE ARE ZEROS IN THE EXPECTED (INPUT) DATA
