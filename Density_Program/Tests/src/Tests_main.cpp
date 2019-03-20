@@ -3,6 +3,7 @@ using namespace std;
 
 //Integration Tests
 //
+
 void testInputvsResults(const vector<double> &t1)
 {
 	//vector<double> starcounts = interpolate(t1);
@@ -41,6 +42,13 @@ void testInputvsResults(const vector<double> &t1)
     
 }
 
+//Unit tests:
+
+void testChiSq()
+{
+	return;
+}
+
 void testDelimiterFinding()
 {
     //Test for "unsigned int findLastDelimiter(string input, char delimiter)"
@@ -77,7 +85,9 @@ void testInterpolate()
 	std::cout <<"\nAfter Interpolation; Size: "<< r1.size() <<std::endl;	
 	for (size_t i = 0; i < r1.size(); i++) 
 	{
-		std::cout<< r1[i] << ", "; 
+		std::cout<< r1[i];
+		if (i != r1.size() -1)
+			cout<< ", "; 
 	}
 	std::cout << "\n";
 	
@@ -193,7 +203,6 @@ bool testDiscrete_Convolution_2_Helper(const vector<double>& input)
 	else
 		return false;
 }	
-
 void testDiscrete_Convolution_2_Odd()
 {
 	std::cout << "\nTest Discrete_Convolution_2_Odd\n====================================\n\n";
@@ -222,11 +231,29 @@ void testDiscrete_Convolution_2_Odd()
 		}
 		if (i != vectorGaussian.size()-1)
 			std::cout<<total<< ", ";
+		else 
+			cout<<total;
 	}
     std::cout << std::endl;
+	//tests whether the gaussian vectors have an odd length. 
+	cout<<"\nChecking whether gaussians has odd lengths"<<endl;
+	bool flagOddLen = false;
+	for(size_t i = 0; i < vectorGaussian.size(); i++)
+	{
+		cout<<vectorGaussian.size();
+		if (i != vectorGaussian.size() -1)
+			cout<<", ";
+		if (vectorGaussian[i].size() % 2 == 0)
+			flagOddLen = true;
+	}
+	cout<<endl;
+	if (flagOddLen)
+		std::cout<<"At least one of the gaussian vectors has a length that is not odd."<<endl;
+	else
+		std::cout<<"All gaussian vectors have odd lengths"<<endl;
 	if (flagsize)
 		std::cout<<"The Discrete_Convolution_2_Odd() returns a bins of the that is of different size to that of the input?!?!"<<std::endl;
-	cout<<"Finished all tests for Discrete_Convolution_2_Odd\n";
+	cout<<"\nFinished all tests for Discrete_Convolution_2_Odd\n";
 }
 
 void testCompleteness()
